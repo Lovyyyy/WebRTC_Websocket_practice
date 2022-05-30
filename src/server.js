@@ -1,4 +1,6 @@
 import express from "express";
+import http from "http";
+import WebSocket from "ws";
 
 const app = express();
 app.set("view engine", "pug");
@@ -10,4 +12,52 @@ app.get("/", (req, res) => res.render("home"));
 console.log("hello");
 
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
-app.listen(3000, handleListen);
+// app.listen(3000, handleListen);
+const server = http.createServer(app);
+const wsServer = new WebSocket.Server({ server });
+// WebSocket 서버에 http 서버를 넣어줌으로써 WebSocket 서버와 http 서버를 동시에 기동 가능함 (optional)
+// webSocket 서버에 http 서버를 넣으면 동일한 포트에서 http / ws 프로토콜 모두 사용 가능
+
+const sockets = [];
+
+wsServer.on("connection", (socket) => {
+  sockets.push(socket);
+  socket.nickname = "ㅇㅇ";
+  // sockets 배열에 socket(브라우저) 를 넣어줌
+  console.log("Connected server");
+
+  socket.on("close", () => {
+    console.log("Browser Disconnected");
+  });
+  socket.on("message", (message) => {
+    const messageString = message.toString();
+    const parsedMessage = JSON.parse(messageString);
+    switch (parsedMessage.type) {
+      case "new_message":
+        sockets.forEach((browser) => browser.send(`${socket.nickname} : ${parsedMessage.payload}`));
+      case "nickName":
+        socket.nickname = parsedMessage.payload;
+    }
+
+    // 하단의 if문은 위의 switch 문으로 변경 할 수 있다.
+
+    // if (parsedMessage.type === "new_message") {
+    //   sockets.forEach((browser) => browser.send(`${socket.nickname} : ${parsedMessage.payload}`));
+    // } else if (parsedMessage.type === "nickName") {
+    //   socket.nickname = parsedMessage.payload;
+    // }
+
+    // socket.send(messageString);
+    console.log(JSON.parse(messageString));
+  });
+});
+//server의 socket 객체는 연결 된 브라우저를 의미한다.
+
+server.listen(3000, handleListen);
+
+/*
+
+
+
+
+*/
