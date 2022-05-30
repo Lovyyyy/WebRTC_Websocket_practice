@@ -10,14 +10,21 @@ html(lang="en")
     header  
       h1 nOOm
     main 
-      ul
-      form#nickName
-        input(type ="text" placeholder="닉네임을 입력해주세요" required)
-        button  Save
-      form#message
-        input(type ="text" placeholder="메세지를 입력하세요" required)
-        button send
+      div#lobby
+        form
+          input(placeholder = "room name" type ="text" required)
+          button Enter Room
+      div#room
+        h2
+        ul
+        form#nickname
+          input(placeholder = "nickname" type ="text" required)
+          button Save      
+        form#message
+          input(placeholder = "message" type ="text" required)
+          button Send
     
-    
-    
-    script(src="/public/js/index.js")
+    script(src="/socket.io/socket.io.js")
+    script(src="/public/js/SocketIO.js")
+
+    // socket.io를 클라이언트에 적용

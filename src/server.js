@@ -1,25 +1,63 @@
 import express from "express";
 import http from "http";
-import WebSocket from "ws";
+import SocketIO from "socket.io";
+// import WebSocket from "ws";
 
 const app = express();
 app.set("view engine", "pug");
 app.set("views", __dirname + "/views");
-
 app.use("/public", express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.render("home"));
 
-console.log("hello");
-
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
 // app.listen(3000, handleListen);
-const server = http.createServer(app);
-const wsServer = new WebSocket.Server({ server });
+const httpServer = http.createServer(app);
+const io = SocketIO(httpServer);
+// const wsServer = new WebSocket.Server({ httpServer });
+
+io.on("connection", (socket) => {
+  socket.nickname = "익명";
+  socket.onAny((event) => {
+    console.log(`SOCKET EVENT : ${event}`);
+  });
+  // socket.onAny 는 소켓에서 발생하는 어떠한 이벤트도 console을 통해 추적 함
+
+  socket.on("room", (roomName, inputText) => {
+    console.log("socket.id : " + socket.id);
+    socket.join(roomName);
+    console.log(socket.rooms);
+    inputText();
+
+    socket.to(roomName).emit("hello", socket.nickname);
+    // roomName 방에 있는 모두에게 join 이벤트를 실행.
+  });
+
+  socket.on("disconnecting", () => {
+    socket.rooms.forEach((room) => {
+      socket.to(room).emit("bye", socket.nickname);
+    });
+  });
+
+  socket.on("new_message", (message, room, sendingMessage) => {
+    socket.to(room).emit("new_message2", `${socket.nickname}:${message}`);
+    sendingMessage();
+  });
+  /*socket.on("disconnecting", function )  
+  소켓의 연결이 끊어질때 발생하는 이벤트라고 보면 될 듯
+  socket.rooms 는 socket이 속해있는 방의 목록을 나타내며, 
+  소속 된 모든 방들에 개별적으로 bye 이벤트를 실행  */
+
+  socket.on("setNickname", (nickname) => (socket.nickname = nickname));
+});
+
+httpServer.listen(3000, handleListen);
+
+/*
+
 // WebSocket 서버에 http 서버를 넣어줌으로써 WebSocket 서버와 http 서버를 동시에 기동 가능함 (optional)
 // webSocket 서버에 http 서버를 넣으면 동일한 포트에서 http / ws 프로토콜 모두 사용 가능
 
 const sockets = [];
-
 wsServer.on("connection", (socket) => {
   sockets.push(socket);
   socket.nickname = "ㅇㅇ";
@@ -29,6 +67,7 @@ wsServer.on("connection", (socket) => {
   socket.on("close", () => {
     console.log("Browser Disconnected");
   });
+
   socket.on("message", (message) => {
     const messageString = message.toString();
     const parsedMessage = JSON.parse(messageString);
@@ -51,13 +90,9 @@ wsServer.on("connection", (socket) => {
     console.log(JSON.parse(messageString));
   });
 });
+
 //server의 socket 객체는 연결 된 브라우저를 의미한다.
 
 server.listen(3000, handleListen);
-
-/*
-
-
-
 
 */

@@ -1,0 +1,36 @@
+socket.IO 설치시 socket.io/socket.io.js url이 생성 됨
+클라이언트에도 socket.io의 적용시 상기 url 주소를 script로 넣어주면 됨 
+    script(src="/socket.io/socket.io.js")
+
+
+ROOM 
+
+user가 웹사이트로 가게 되면  방에 참가하는 등
+- 소켓IO는 ROOM rlsmddmf dlal rkwlrh dlTek.
+
+ROOM에 메세지를 보낼 수도 있구요
+~
+
+  socket.send 와 socket.emit의  차별점
+  websocket은 message만 전달 할 수 있으며, 그 값은 string으로만 가능 했음
+  socketIo 에서 emit 함수의 첫 인자는 발생 될 이벤트의 이름을 string // symbol로써 전달
+  이후 인자들은 타입과 관계 없이 사용이 가능하며, 
+  함수가 들어가는 경우, 프론트에서 생성한 함수를 서버측에서 인자로 받을 수 있음.
+  다만 함수는 꼭 인자의 마지막에 넣어야 정상적으로 서버로 전달 됨
+  ! 인자로 받는다는것이 백엔드에서 프론트에서 작성한 함수를 사용한다는것과는 다름 
+  서버로 전달 된 함수를 서버에서 실행하는 경우,
+   함수의 실행과 인자 정보를 클라이언트로 전달 한다고 보면 될 듯
+  
+  
+  클라이언트의 emit으로 전송한 이벤트 명과 
+  서버에서 sockiet.on을 통해 받아오는 이벤트명은 동일해야 함. 
+
+
+ROOM < 실시간으로 정보를 주고 받을 대상자들을 그룹으로 묶어둔 개념? 
+
+
+
+
+Adapter 
+
+> 
