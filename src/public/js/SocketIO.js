@@ -3,6 +3,8 @@ const socket = io();
 const lobby = document.querySelector("#lobby");
 const form = lobby.querySelector("form");
 const room = document.querySelector("#room");
+const messageForm = room.querySelector("#message");
+const nameForm = room.querySelector("#nickname");
 
 room.hidden = true;
 // socket.io를 프론트에 적용 , 자동으로 socket.io 를 사용하는 서버에 연결 함   -
@@ -68,19 +70,38 @@ const sendingMessage = (message) => {
   li.textContent = message;
 };
 
-socket.on("hello", (user) => {
+socket.on("hello", (user, newCount) => {
+  const h2 = room.querySelector("h2");
+  h2.textContent = `Room : ${roomName} : ${newCount}`;
   sendingMessage(`${user} 님이 입장하셨습니다.`);
 });
 // 서버에서 진행되는 hello 이벤트
 
-socket.on("bye", (user) => {
+socket.on("bye", (user, newCount) => {
+  const h2 = room.querySelector("h2");
+  h2.textContent = `Room : ${roomName} : ${newCount}`;
   sendingMessage(`${user} 님이 퇴장하셨습니다.`);
 });
 // 서버에서 진행되는 bye 이벤트
 
 socket.on("new_message2", sendingMessage);
 
-const messageForm = room.querySelector("#message");
-const nameForm = room.querySelector("#nickname");
+socket.on("room_change", console.log);
+// socket.on("room_change", (msg) => {console.log(msg)});
+// 같은 코드
+
+socket.on("room_change", (rooms) => {
+  const roomList = lobby.querySelector("ul");
+  roomList.textContent = "";
+  if (rooms.length === 0) {
+    return;
+  }
+  rooms.forEach((element) => {
+    const li = document.createElement("li");
+    roomList.append(li);
+    li.textContent = element;
+  });
+});
+
 messageForm.addEventListener("submit", handleMessageSubmit);
 nameForm.addEventListener("submit", handleNicknameSubmit);

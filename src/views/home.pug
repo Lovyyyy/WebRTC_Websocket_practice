@@ -9,22 +9,24 @@ html(lang="en")
   body 
     header  
       h1 nOOm
-    main 
-      div#lobby
+    main
+      div#welcome
         form
-          input(placeholder = "room name" type ="text" required)
-          button Enter Room
-      div#room
-        h2
-        ul
-        form#nickname
-          input(placeholder = "nickname" type ="text" required)
-          button Save      
-        form#message
-          input(placeholder = "message" type ="text" required)
-          button Send
+          input(type="text" placeholder="Room name" required)
+          button 입장
+      div#call 
+        div#myStream
+          video#myFace(autoplay playsinline width="400" height="400" )
+          button#mute 음소거
+          button#camera 카메라 끄기
+          select#audios
+          select#cameras
+        video#peersStream(autoplay playsinline width="400" height="400" )
+          
+
+      // playsinlne => 비디오가 전체화면이 아닌 상태에서 실행 가능 
     
     script(src="/socket.io/socket.io.js")
-    script(src="/public/js/SocketIO.js")
+    script(src="/public/js/Video.js")
 
     // socket.io를 클라이언트에 적용
